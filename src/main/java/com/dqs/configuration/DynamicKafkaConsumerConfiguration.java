@@ -1,7 +1,7 @@
 package com.dqs.configuration;
 
 import com.dqs.SubQueryExecuted;
-import com.dqs.query.service.QueryStatusService;
+import com.dqs.SubQueryExecutedConsumer;
 import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +20,7 @@ public class DynamicKafkaConsumerConfiguration {
     private ConsumerFactory<String, SubQueryExecuted> consumerFactory;
 
     @Autowired
-    private QueryStatusService queryStatusService;
+    private SubQueryExecutedConsumer subQueryExecutedConsumer;
 
     private final List<KafkaMessageListenerContainer<String, SubQueryExecuted>> containers = new ArrayList<>();
 
@@ -32,7 +32,7 @@ public class DynamicKafkaConsumerConfiguration {
         containerProps.setGroupId(groupId);
         containerProps.setMessageListener((MessageListener<String, SubQueryExecuted>) record -> {
             SubQueryExecuted event = record.value();
-            queryStatusService.mayBeCompleteTheQuery(event.queryId(), event.subQueryId());
+            subQueryExecutedConsumer.consume(event);
         });
 
         KafkaMessageListenerContainer<String, SubQueryExecuted> container =
