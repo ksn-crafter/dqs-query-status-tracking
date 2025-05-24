@@ -1,4 +1,4 @@
-package com.dqs.configuration;
+package com.dqs.config;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;

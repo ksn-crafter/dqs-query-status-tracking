@@ -1,4 +1,4 @@
-package com.dqs.configuration;
+package com.dqs.config;
 
 import com.dqs.SubQueryExecuted;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
