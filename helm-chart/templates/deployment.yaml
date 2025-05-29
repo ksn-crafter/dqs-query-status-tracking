@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: query-status-tracking-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: query-status-tracking
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: query-status-tracking
+  template:
+    metadata:
+      labels:
+        app: query-status-tracking
+    spec:
+      containers:
+      - name: query-status-tracking-container
+        image: {{ .Values.imageUri }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+          - name: KAFKA_BOOTSTRAP_SERVERS
+            value: {{ .Values.KAFKA_BOOTSTRAP_SERVERS}}
+          - name: MONGO_DB_URL
+            value: {{ .Values.MONGO_DB_URL}}
+          - name: TENANTS
+            value: {{ .Values.TENANTS}}

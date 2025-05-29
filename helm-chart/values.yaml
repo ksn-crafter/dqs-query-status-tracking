@@ -1,0 +1,8 @@
+#used for deployment
+namespace: dqs-app
+imageUri: ''
+
+#used by application
+KAFKA_BOOTSTRAP_SERVERS: ''
+MONGO_DB_URL: ''
+TENANTS: ''
