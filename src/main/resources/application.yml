@@ -4,3 +4,4 @@ spring:
   data:
     mongodb:
       uri: ${MONGO_DB_URL:mongodb://localhost:27017/dqs}
+tenants: ${TENANTS}
