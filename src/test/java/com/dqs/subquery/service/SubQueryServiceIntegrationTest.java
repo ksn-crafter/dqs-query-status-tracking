@@ -20,6 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -28,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
-@EmbeddedKafka(partitions = 1, topics = {"subqueries_executed_jpmc"})
+@EmbeddedKafka(partitions = 1, topics = {"sub_query_executed_jpmc"})
 class SubQueryServiceIntegrationTest {
 
     @Autowired
@@ -68,7 +69,7 @@ class SubQueryServiceIntegrationTest {
     @Test
     void completeASubQuery() {
         subQueryRepository.deleteAllById(List.of("1", "2"));
-        subQueryRepository.save(new SubQuery("1", "query-1", "subquery-1", 2, Status.Completed));
+        subQueryRepository.save(new SubQuery("1", "query-1", "subquery-1", 2, Status.Completed, LocalDateTime.now()));
         subQueryRepository.save(new SubQuery("2", "query-1", "subquery-2", 2, Status.InProgress));
 
         subqueryService.completeSubQuery("query-1", "subquery-2");
@@ -76,6 +77,19 @@ class SubQueryServiceIntegrationTest {
         boolean allDone = subqueryService.areAllSubQueriesDone("query-1");
 
         assertThat(allDone).isTrue();
+    }
+
+    @Test
+    void completeASubQueryWithCompletionTime() {
+        subQueryRepository.deleteAllById(List.of("1", "2"));
+        subQueryRepository.save(new SubQuery("1", "query-1", "subquery-1", 2, Status.Completed, LocalDateTime.now()));
+        subQueryRepository.save(new SubQuery("2", "query-1", "subquery-2", 2, Status.InProgress));
+
+        subqueryService.completeSubQuery("query-1", "subquery-2");
+
+        SubQuery subQuery = subQueryRepository.findByQueryIdAndSubQueryId("query-1", "subquery-2").get();
+
+        assertThat(subQuery.completionTime()).isNotNull();
     }
 
     @Test
@@ -88,7 +102,7 @@ class SubQueryServiceIntegrationTest {
     @Test
     void allSubQueriesAreNotDone() {
         subQueryRepository.deleteAllById(List.of("1", "2"));
-        subQueryRepository.save(new SubQuery("1", "query-1", "subquery-1", 2, Status.Completed));
+        subQueryRepository.save(new SubQuery("1", "query-1", "subquery-1", 2, Status.Completed, LocalDateTime.now()));
         subQueryRepository.save(new SubQuery("2", "query-1", "subquery-2", 2, Status.InProgress));
 
         boolean allDone = subqueryService.areAllSubQueriesDone("query-1");
@@ -99,7 +113,7 @@ class SubQueryServiceIntegrationTest {
     @Test
     void allSubQueriesAreNotDoneDespiteCompletingOneSubQuery() {
         subQueryRepository.deleteAllById(List.of("101", "201", "301"));
-        subQueryRepository.save(new SubQuery("101", "query-10", "subquery-10", 3, Status.Completed));
+        subQueryRepository.save(new SubQuery("101", "query-10", "subquery-10", 3, Status.Completed, LocalDateTime.now()));
         subQueryRepository.save(new SubQuery("201", "query-10", "subquery-20", 3, Status.InProgress));
         subQueryRepository.save(new SubQuery("301", "query-10", "subquery-30", 3, Status.InProgress));
 
@@ -113,7 +127,7 @@ class SubQueryServiceIntegrationTest {
     @Test
     void allSubQueriesAreDone() {
         subQueryRepository.deleteAllById(List.of("102", "202", "302"));
-        subQueryRepository.save(new SubQuery("102", "query-15", "subquery-10", 3, Status.Completed));
+        subQueryRepository.save(new SubQuery("102", "query-15", "subquery-10", 3, Status.Completed, LocalDateTime.now()));
         subQueryRepository.save(new SubQuery("202", "query-15", "subquery-20", 3, Status.InProgress));
         subQueryRepository.save(new SubQuery("302", "query-15", "subquery-30", 3, Status.InProgress));
 

@@ -24,9 +24,9 @@ public class DynamicKafkaConsumerConfiguration {
 
     private final List<KafkaMessageListenerContainer<String, SubQueryExecuted>> containers = new ArrayList<>();
 
-    public void registerConsumerForTopic(String tenantId) {
-        String topic = "subqueries_executed_" + tenantId;
-        String groupId = "subquery-executed-consumer-" + tenantId;
+    public void registerConsumerForTopic(String tenant) {
+        String topic = "sub_query_executed_" + tenant;
+        String groupId = "sub_query_executed_consumer_" + tenant;
 
         ContainerProperties containerProps = new ContainerProperties(topic);
         containerProps.setGroupId(groupId);

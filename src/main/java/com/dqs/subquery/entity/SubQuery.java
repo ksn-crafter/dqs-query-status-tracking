@@ -4,6 +4,8 @@ import com.dqs.query.entity.Status;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
 
+import java.time.LocalDateTime;
+
 @Document(collection = "sub_queries")
 public class SubQuery {
 
@@ -11,13 +13,16 @@ public class SubQuery {
     private String id;
     private String queryId;
     private String subQueryId;
-    private long totalSubqueries;
+    private String[] filePaths;
     private Status status;
+    private LocalDateTime creationTime;
+    private LocalDateTime completionTime;
+    private int totalSubqueries;
 
     public SubQuery() {
     }
 
-    public SubQuery(String id, String queryId, String subQueryId, long totalSubqueries, Status status) {
+    public SubQuery(String id, String queryId, String subQueryId, int totalSubqueries, Status status) {
         this.id = id;
         this.queryId = queryId;
         this.subQueryId = subQueryId;
@@ -25,15 +30,29 @@ public class SubQuery {
         this.status = status;
     }
 
-    public void complete() {
-        this.status = Status.Completed;
+    public SubQuery(String id, String queryId, String subQueryId, int totalSubqueries, Status status, LocalDateTime completionTime) {
+        this.id = id;
+        this.queryId = queryId;
+        this.subQueryId = subQueryId;
+        this.totalSubqueries = totalSubqueries;
+        this.status = status;
+        this.completionTime = completionTime;
     }
 
-    public long totalSubqueries() {
+    public void complete() {
+        this.status = Status.Completed;
+        this.completionTime = LocalDateTime.now();
+    }
+
+    public int totalSubqueries() {
         return totalSubqueries;
     }
 
     public Status status() {
         return status;
+    }
+
+    public LocalDateTime completionTime() {
+        return completionTime;
     }
 }

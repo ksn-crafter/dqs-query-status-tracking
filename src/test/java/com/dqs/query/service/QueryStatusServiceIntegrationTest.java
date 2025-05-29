@@ -30,7 +30,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
-@EmbeddedKafka(partitions = 1, topics = {"subqueries_executed_jpmc"})
+@EmbeddedKafka(partitions = 1, topics = {"sub_query_executed_jpmc"})
 public class QueryStatusServiceIntegrationTest {
 
     @Autowired
@@ -76,7 +76,7 @@ public class QueryStatusServiceIntegrationTest {
         queryRepository.deleteByQueryId("query-40");
 
         queryRepository.save(new QueryDescription("query-40", "JPMC", "Historical", 2001, 2007, Status.InProgress, LocalDateTime.now()));
-        subQueryRepository.save(new SubQuery("1", "query-40", "subquery-1", 2, Status.Completed));
+        subQueryRepository.save(new SubQuery("1", "query-40", "subquery-1", 2, Status.Completed, LocalDateTime.now()));
         subQueryRepository.save(new SubQuery("2", "query-40", "subquery-2", 2, Status.InProgress));
 
         queryStatusService.mayBeCompleteTheQuery("query-40", "subquery-2");
@@ -92,7 +92,7 @@ public class QueryStatusServiceIntegrationTest {
         queryRepository.deleteByQueryId("query-100");
 
         queryRepository.save(new QueryDescription("query-100", "JPMC", "Historical", 2001, 2007, Status.InProgress, LocalDateTime.now()));
-        subQueryRepository.save(new SubQuery("100", "query-100", "subquery-1", 3, Status.Completed));
+        subQueryRepository.save(new SubQuery("100", "query-100", "subquery-1", 3, Status.Completed, LocalDateTime.now()));
         subQueryRepository.save(new SubQuery("200", "query-100", "subquery-2", 3, Status.InProgress));
         subQueryRepository.save(new SubQuery("300", "query-100", "subquery-3", 3, Status.InProgress));
 
@@ -109,7 +109,7 @@ public class QueryStatusServiceIntegrationTest {
         queryRepository.deleteByQueryId("query-1001");
 
         queryRepository.save(new QueryDescription("query-1001", "JPMC", "Historical", 2001, 2007, Status.InProgress, LocalDateTime.now()));
-        subQueryRepository.save(new SubQuery("1001", "query-1001", "subquery-1", 3, Status.Completed));
+        subQueryRepository.save(new SubQuery("1001", "query-1001", "subquery-1", 3, Status.Completed, LocalDateTime.now()));
         subQueryRepository.save(new SubQuery("2001", "query-1001", "subquery-2", 3, Status.InProgress));
         subQueryRepository.save(new SubQuery("3001", "query-1001", "subquery-3", 3, Status.InProgress));
 

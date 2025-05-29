@@ -43,7 +43,7 @@ import static org.awaitility.Awaitility.await;
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
-@EmbeddedKafka(partitions = 1, topics = {"subqueries_executed_jpmc", "subqueries_executed_deutsche"})
+@EmbeddedKafka(partitions = 1, topics = {"sub_query_executed_jpmc", "sub_query_executed_deutsche"})
 class SubQueryExecutedConsumerIntegrationTest {
 
     private KafkaTemplate<String, SubQueryExecuted> kafkaTemplate;
@@ -107,12 +107,13 @@ class SubQueryExecutedConsumerIntegrationTest {
         subQueryRepository.save(new SubQuery("700", "query-510", "subquery-1", 2, Status.InProgress));
         subQueryRepository.save(new SubQuery("800", "query-510", "subquery-2", 2, Status.InProgress));
 
-        kafkaTemplate.send("subqueries_executed_deutsche", new SubQueryExecuted("query-510", "subquery-2"));
-        kafkaTemplate.send("subqueries_executed_deutsche", new SubQueryExecuted("query-510", "subquery-1"));
+        kafkaTemplate.send("sub_query_executed_deutsche", new SubQueryExecuted("query-510", "subquery-2", LocalDateTime.now()));
+        kafkaTemplate.send("sub_query_executed_deutsche", new SubQueryExecuted("query-510", "subquery-1", LocalDateTime.now()));
 
         await().atMost(ofSeconds(5)).untilAsserted(() -> {
             SubQuery subQuery = subQueryRepository.findByQueryIdAndSubQueryId("query-510", "subquery-2").get();
             assertThat(subQuery.status()).isEqualTo(Status.Completed);
+            assertThat(subQuery.completionTime()).isNotNull();
 
             QueryDescription queryDescription = queryRepository.findByQueryId("query-510").get();
             assertThat(queryDescription.status()).isEqualTo(Status.Completed);
@@ -125,16 +126,17 @@ class SubQueryExecutedConsumerIntegrationTest {
         queryRepository.deleteByQueryId("query-710");
 
         queryRepository.save(new QueryDescription("query-710", "JPMC", "Historical", 2001, 2007, Status.InProgress, LocalDateTime.now()));
-        subQueryRepository.save(new SubQuery("1000", "query-710", "subquery-1", 3, Status.Completed));
+        subQueryRepository.save(new SubQuery("1000", "query-710", "subquery-1", 3, Status.Completed, LocalDateTime.now()));
         subQueryRepository.save(new SubQuery("1001", "query-710", "subquery-2", 3, Status.InProgress));
         subQueryRepository.save(new SubQuery("1002", "query-710", "subquery-3", 4, Status.InProgress));
 
-        SubQueryExecuted event = new SubQueryExecuted("query-710", "subquery-3");
-        kafkaTemplate.send("subqueries_executed_jpmc", event);
+        SubQueryExecuted event = new SubQueryExecuted("query-710", "subquery-3", LocalDateTime.now());
+        kafkaTemplate.send("sub_query_executed_jpmc", event);
 
         await().atMost(ofSeconds(5)).untilAsserted(() -> {
             SubQuery subQuery = subQueryRepository.findByQueryIdAndSubQueryId("query-710", "subquery-3").get();
             assertThat(subQuery.status()).isEqualTo(Status.Completed);
+            assertThat(subQuery.completionTime()).isNotNull();
 
             QueryDescription queryDescription = queryRepository.findByQueryId("query-710").get();
             assertThat(queryDescription.status()).isEqualTo(Status.InProgress);
