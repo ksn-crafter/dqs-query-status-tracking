@@ -3,4 +3,4 @@ spring:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
   data:
     mongodb:
-      uri: ${MONGO_DB_PATH:mongodb://localhost:27017/dqs}
+      uri: ${MONGO_DB_URL:mongodb://localhost:27017/dqs}
