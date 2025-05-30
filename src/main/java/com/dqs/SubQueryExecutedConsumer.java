@@ -13,6 +13,7 @@ public class SubQueryExecutedConsumer {
     }
 
     public void consume(SubQueryExecuted subQueryExecuted) {
+        System.out.println("Received SubQueryExecuted event with queryId " + subQueryExecuted.queryId() + " and subQueryId " + subQueryExecuted.subQueryId());
         this.queryStatusService.mayBeCompleteTheQuery(subQueryExecuted.queryId(), subQueryExecuted.subQueryId());
     }
 }

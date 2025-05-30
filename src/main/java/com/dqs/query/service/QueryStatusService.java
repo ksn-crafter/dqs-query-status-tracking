@@ -25,6 +25,8 @@ public class QueryStatusService {
         if (this.subQueryService.areAllSubQueriesDone(queryId)) {
             Optional<QueryDescription> optionalQueryDescription = queryRepository.findByQueryId(queryId);
             if (optionalQueryDescription.isPresent()) {
+                System.out.println("Completing the query with queryId " + queryId);
+
                 QueryDescription queryDescription = optionalQueryDescription.get();
                 queryDescription.complete();
                 queryRepository.save(queryDescription);

@@ -22,6 +22,7 @@ public class SubQueryService {
     public void completeSubQuery(String queryId, String subQueryId) {
         Optional<SubQuery> optionalSubQuery = subQueryRepository.findByQueryIdAndSubQueryId(queryId, subQueryId);
         if (optionalSubQuery.isPresent()) {
+            System.out.println("Completing the subQuery with subQueryId " + subQueryId);
             SubQuery subQuery = optionalSubQuery.get();
             subQuery.complete();
             subQueryRepository.save(subQuery);
@@ -35,6 +36,7 @@ public class SubQueryService {
         long totalSubQueries = subQueryRepository.findFirstByQueryId(queryId).map(SubQuery::totalSubqueries).get();
         long totalCompletedSubQueries = subQueryRepository.countByQueryIdAndStatus(queryId, Status.Completed);
 
+        System.out.println("queryId " + queryId + ", totalSubQueries " + totalSubQueries + ", totalCompletedSubQueries " + totalCompletedSubQueries);
         return totalSubQueries == totalCompletedSubQueries;
     }
 }
