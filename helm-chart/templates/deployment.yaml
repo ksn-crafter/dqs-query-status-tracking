@@ -2,11 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: query-status-tracking-deployment
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Values.TENANTS }}
   labels:
     app: query-status-tracking
 spec:
-  replicas: 1
+  replicas: {{ .Values.NUMBER_OF_WORKERS  }}
   selector:
     matchLabels:
       app: query-status-tracking
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: query-status-tracking-container
-        image: {{ .Values.imageUri }}
+        image: {{ .Values.IMAGE_URI }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
