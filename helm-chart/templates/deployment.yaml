@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: query-status-tracking-deployment
-  namespace: {{ .Values.TENANTS }}
+  namespace: {{ .Values.namespace }}
   labels:
     app: query-status-tracking
 spec:
@@ -15,6 +15,7 @@ spec:
       labels:
         app: query-status-tracking
     spec:
+      serviceAccountName: {{ .Values.serviceAccountName }}
       containers:
       - name: query-status-tracking-container
         image: {{ .Values.IMAGE_URI }}
