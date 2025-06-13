@@ -1,12 +1,14 @@
+{{- range .Values.TENANTS }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: query-status-tracking-deployment
-  namespace: {{ .Values.namespace }}
+  name: {{ printf "dqs-query-status-tracking-deployment-%s" . }}
+  namespace: {{ printf "%s-%s" $.Values.namespace . }}
   labels:
     app: query-status-tracking
 spec:
-  replicas: {{ .Values.NUMBER_OF_WORKERS  }}
+  replicas: {{ $.Values.NUMBER_OF_WORKERS  }}
   selector:
     matchLabels:
       app: query-status-tracking
@@ -15,17 +17,21 @@ spec:
       labels:
         app: query-status-tracking
     spec:
-      serviceAccountName: {{ .Values.serviceAccountName }}
+      serviceAccountName: {{ printf "dqs-query-status-tracking-%s-service-account" . }}
+      nodeSelector:
+        kubernetes.io/arch: arm64
       containers:
       - name: query-status-tracking-container
-        image: {{ .Values.IMAGE_URI }}
+        image: {{ $.Values.IMAGE_URI }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
         env:
           - name: KAFKA_BOOTSTRAP_SERVERS
-            value: {{ .Values.KAFKA_BOOTSTRAP_SERVERS}}
+            value: {{ $.Values.KAFKA_BOOTSTRAP_SERVERS}}
           - name: MONGO_DB_URL
-            value: {{ .Values.MONGO_DB_URL}}
+            value: {{ $.Values.MONGO_DB_URL}}
           - name: TENANTS
-            value: {{ .Values.TENANTS}}
+            value: {{ . }}
+---
+{{- end }}

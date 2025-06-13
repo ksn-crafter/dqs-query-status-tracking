@@ -1,4 +1,8 @@
+{{- range .Values.TENANTS }}
+---
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: {{ .Values.namespace }}
+  name: {{ printf "%s-%s" $.Values.namespace . }}
+---
+{{- end }}
